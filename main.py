@@ -1,9 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from decouple import config
-from src.models.models import ChatResponse, UserMesssage
+from src.routes.routes import iaResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.include_router(iaResponse)
 
 FRONT_END_URL = config('FRONT_END_URL')
 print(f"FRONT_END_URL : {FRONT_END_URL}")
@@ -20,17 +21,5 @@ app.add_middleware(
 async def welcome():
     return {"response": "hola welcome!"}
 
-@app.get('/getiaresponse/{userMessage}')
-async def welcome(userMessage : str,):
-    chat = ChatResponse(userMessage=userMessage)
-    chat.iaResponse = "hola que tal" 
-    return chat.model_dump()
-
-
-@app.post('/iaresponse/')
-async def getIaResponse(userMessage : UserMesssage):
-    chat = ChatResponse(userMessage=userMessage.userMessage, files=userMessage.files)
-    chat.iaResponse = "hola que tal" 
-    return chat.model_dump()
 
 
