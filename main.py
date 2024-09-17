@@ -11,7 +11,7 @@ print(f"FRONT_END_URL : {FRONT_END_URL}")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[FRONT_END_URL],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
