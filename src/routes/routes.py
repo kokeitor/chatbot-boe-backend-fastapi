@@ -20,7 +20,7 @@ async def welcome(userMessage: str,):
 @iaResponse.post("/iaresponse/")
 async def getIaResponse(
     userMessage: Annotated[str, Form()],
-    uploadFiles: Optional[list[UploadFile]] = File(None)
+    uploadFiles: Optional[list[UploadFile]] = None
 ):
     print(f"uploadFiles : {uploadFiles}")
     print(f"userMessage : {userMessage}")
