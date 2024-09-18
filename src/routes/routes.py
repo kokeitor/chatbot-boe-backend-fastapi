@@ -1,5 +1,7 @@
 from fastapi import HTTPException, APIRouter
-from src.models.models import ChatResponse, UserMesssage
+from src.models.models import ChatResponse
+from typing import Optional
+from fastapi import UploadFile, File, Form
 import os
 
 UPLOAD_DIR = os.path.join(os.getcwd(), 'src', 'assets', 'uploads')
@@ -15,22 +17,29 @@ async def welcome(userMessage: str,):
     return chat.model_dump()
 
 
-@iaResponse.post('/iaresponse/')
-async def getIaResponse(userMessage: UserMesssage):
-    print(userMessage)
-    print(userMessage.model_dump())
-    if userMessage.uploadFiles:
+@iaResponse.post("/iaresponse/")
+async def getIaResponse(
+    userMessage: str = Form(...),
+    uploadFiles: Optional[list[UploadFile]] = File(None)
+):
+    print(f"uploadFiles : {uploadFiles}")
+    if uploadFiles:
         fileNames = []
-        for file in userMessage.uploadFiles:
-            print(f"file : {file}")
+        for file in uploadFiles:
             fileName = file.filename
             fileNames.append(fileName)
             fileContent = await file.read()
-            with open(UPLOAD_DIR + f"/{fileName}", "wb") as f:
+            with open(os.path.join(UPLOAD_DIR, fileName), "wb") as f:
                 f.write(fileContent)
         chat = ChatResponse(
-            userMessage=userMessage.userMessage, files=fileNames)
+            userMessage=userMessage,
+            iaResponse="hola que tal jajajajajaa",
+            files=fileNames
+        )
     else:
-        chat = ChatResponse(userMessage=userMessage.userMessage, files=[""])
-    chat.iaResponse = "hola que tal jajajajajaa"
-    return chat.model_dump()
+        chat = ChatResponse(
+            userMessage=userMessage,
+            iaResponse="hola que tal jajajajajaa",
+            files=[]
+        )
+    return chat

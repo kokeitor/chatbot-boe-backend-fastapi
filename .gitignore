@@ -1,3 +1,4 @@
 env
 .env
+src/assets/uploads
 **/__pycache__/
