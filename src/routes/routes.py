@@ -1,6 +1,6 @@
 from fastapi import HTTPException, APIRouter
 from src.models.models import ChatResponse
-from typing import Optional
+from typing import Optional, Annotated
 from fastapi import UploadFile, File, Form
 import os
 
@@ -19,10 +19,11 @@ async def welcome(userMessage: str,):
 
 @iaResponse.post("/iaresponse/")
 async def getIaResponse(
-    userMessage: str = Form(...),
+    userMessage: Annotated[str, Form()],
     uploadFiles: Optional[list[UploadFile]] = File(None)
 ):
     print(f"uploadFiles : {uploadFiles}")
+    print(f"userMessage : {userMessage}")
     if uploadFiles:
         fileNames = []
         for file in uploadFiles:

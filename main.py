@@ -16,13 +16,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["POST","GET"],
+    allow_methods=["POST", "GET"],
     allow_headers=["*"],
 )
+
 
 @app.get('/')
 async def welcome():
     return {"response": "hola welcome!"}
-
-
-
