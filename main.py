@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from decouple import config
-from src.routes.routes import iaResponse
+from src.routes.ia_response import iaResponse
+from src.routes.get_data import getData
 from src.Apis.openai_api import OpenAiModel
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -28,6 +29,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 app.include_router(iaResponse)
+app.include_router(getData)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
