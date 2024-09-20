@@ -1,9 +1,8 @@
 from fastapi import HTTPException, APIRouter, Request
+from fastapi.responses import StreamingResponse
 from src.models.models import ChatResponse
-from src.Apis.openai_api import getOpenAiClient
 from typing import Optional, Annotated
 from fastapi import UploadFile, File, Form
-from decouple import config
 import os
 
 UPLOAD_DIR = os.path.join(os.getcwd(), 'src', 'assets', 'uploads')
@@ -59,3 +58,26 @@ async def getIaResponse(
             files=[]
         )
     return chat
+
+
+@iaResponse.get('/iaresponsestream')
+async def stream(
+        request: Request,
+        userMessage: str,
+        uploadFiles: Optional[list[UploadFile]] = None
+):
+
+    print(f"uploadFiles : {uploadFiles}")
+    fileNames = None
+    if uploadFiles:
+        fileNames = []
+        for file in uploadFiles:
+            fileName = file.filename
+            fileNames.append(fileName)
+            fileContent = await file.read()
+            with open(os.path.join(UPLOAD_DIR, fileName), "wb") as f:
+                f.write(fileContent)
+
+    print(f"userMessage : {userMessage}")
+    openAi = request.app.state.AI_MODEL
+    return StreamingResponse(openAi.getStreamResponse(newUserMessage=userMessage), media_type='text/event-stream')

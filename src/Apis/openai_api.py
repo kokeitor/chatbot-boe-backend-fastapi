@@ -1,5 +1,6 @@
 from openai import OpenAI
 from decouple import config
+import openai
 
 
 def getOpenAiClient(OPENAI_API_KEY):
@@ -50,12 +51,35 @@ class OpenAiModel:
         )
         return self.messages[-1]["content"]
 
-    def getStreamResponse(self, newUserMessage: str) -> str:
-        stream = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": newUserMessage}],
-            stream=True,
+    def getStreamResponse(self, newUserMessage: str):
+        self.messages.append(
+            {
+                "role": "user",
+                "content": newUserMessage
+            }
         )
-        for chunk in stream:
-            if chunk.choices[0].delta.content is not None:
-                print(chunk.choices[0].delta.content, end="")
+        streamMessage = self.client.chat.completions.create(
+            model=self.model,
+            messages=self.messages,
+            temperature=self.temperature,
+            stream=True
+        )
+        completeMessage = ""
+
+        # Create the iterator
+        for event in streamMessage:
+            print("event.choices[0].delta.content : ",
+                  event.choices[0].delta.content)
+            if event.choices[0].delta.content != None:
+                current_response = event.choices[0].delta.content
+                completeMessage += current_response
+                yield "data: " + current_response + "\n\n"
+                self.completeMessages.append(streamMessage)
+        # append the commplete ia response to the memory
+        self.messages.append(
+            {
+                "role": "system",
+                "content": completeMessage
+            }
+        )
+        print("complete message : ", completeMessage)
