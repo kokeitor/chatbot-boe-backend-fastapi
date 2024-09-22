@@ -73,7 +73,7 @@ class OpenAiModel:
             if event.choices[0].delta.content != None:
                 current_response = event.choices[0].delta.content
                 completeMessage += current_response
-                yield "data: " + current_response + "\n\n"
+                yield current_response + "\n\n"
                 self.completeMessages.append(streamMessage)
         # append the commplete ia response to the memory
         self.messages.append(

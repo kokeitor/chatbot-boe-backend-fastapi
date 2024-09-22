@@ -60,13 +60,13 @@ async def getIaResponse(
     return chat
 
 
-@iaResponse.get('/iaresponsestream')
+@iaResponse.post('/iaresponsestream')
 async def stream(
-        request: Request,
-        userMessage: str,
-        uploadFiles: Optional[list[UploadFile]] = None
+    request: Request,
+    userMessage: Annotated[str, Form()],
+    uploadFiles: Optional[list[UploadFile]] = None
 ):
-
+    print(f"userMessage : {userMessage}")
     print(f"uploadFiles : {uploadFiles}")
     fileNames = None
     if uploadFiles:
