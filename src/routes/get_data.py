@@ -35,6 +35,19 @@ async def getDiagram():
     return FileResponse(file_path, media_type='image/png')
 
 
+@getData.get('/graph')
+async def getDiagram():
+    files = list_files_in_directory(DATA_DIR)
+    png_files = [file for file in files if file.endswith(
+        '.png') and file.startswith('graph_wf')]
+
+    if not png_files:
+        raise HTTPException(status_code=404, detail="No PNG files found.")
+
+    file_path = os.path.join(DATA_DIR, png_files[0])
+    return FileResponse(file_path, media_type='image/png')
+
+
 @getData.get('/tfm')
 async def getTfm():
     files = list_files_in_directory(DATA_DIR)
